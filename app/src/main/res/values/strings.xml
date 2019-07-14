@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">WeatherApplication</string>
+
+    <string name="retry">Retry</string>
+    <string name="something_went_wrong_at_our_end">Something went wrong at our end!</string>
+    <string name="enable_location_error_message">Please enable Location Services! Click Retry to continue</string>
 </resources>

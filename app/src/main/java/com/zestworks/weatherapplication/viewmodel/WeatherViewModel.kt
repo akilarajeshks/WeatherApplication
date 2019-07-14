@@ -39,6 +39,10 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
         currentStatus.postValue(Status.Error(ErrorType.LOCATION_PERMISSION_DENIED))
     }
 
+    fun onRetryButtonClicked() {
+        currentStatus.postValue(Status.None)
+    }
+
 }
 
 interface NetworkCallback {
