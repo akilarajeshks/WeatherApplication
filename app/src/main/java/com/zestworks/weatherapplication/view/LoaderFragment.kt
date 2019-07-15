@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.zestworks.weatherapplication.R
 import com.zestworks.weatherapplication.viewmodel.ViewModelFactory
@@ -45,10 +46,14 @@ class LoaderFragment : Fragment() {
                     }
                 }
                 is WeatherViewModel.Status.Success -> {
-                    findNavController().navigate(R.id.action_loaderFragment_to_weatherFragment)
+                    val navOptionsBuilder = NavOptions.Builder()
+                    navOptionsBuilder.setPopUpTo(R.id.mainFragment,true)
+                    findNavController().navigate(LoaderFragmentDirections.actionLoaderFragmentToWeatherFragment(),navOptionsBuilder.build())
                 }
                 is WeatherViewModel.Status.Error -> {
-                    findNavController().navigate(R.id.action_loaderFragment_to_errorFragment)
+                    val navOptionsBuilder = NavOptions.Builder()
+                    navOptionsBuilder.setPopUpTo(R.id.mainFragment,true)
+                    findNavController().navigate(LoaderFragmentDirections.actionLoaderFragmentToErrorFragment(),navOptionsBuilder.build())
                 }
             }
         })
