@@ -2,6 +2,7 @@ package com.zestworks.weatherapplication.repository
 
 import com.zestworks.weatherapplication.model.Forecast
 import com.zestworks.weatherapplication.viewmodel.NetworkCallback
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -11,6 +12,7 @@ import retrofit2.http.Query
 class NetworkRepository : Repository {
 
     private val retrofit = Retrofit.Builder().baseUrl("https://api.apixu.com/v1/")
+        .client(OkHttpSingleton.okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
