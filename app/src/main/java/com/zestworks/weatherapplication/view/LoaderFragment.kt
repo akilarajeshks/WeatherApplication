@@ -18,6 +18,9 @@ import kotlinx.android.synthetic.main.fragment_loader.*
 
 class LoaderFragment : Fragment() {
 
+    private lateinit var weatherViewModel: WeatherViewModel
+    private lateinit var renderObserver: Observer<WeatherViewModel.Status>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,9 +32,9 @@ class LoaderFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        val weatherViewModel = ViewModelProviders.of(activity!!, ViewModelFactory)[WeatherViewModel::class.java]
+        weatherViewModel = ViewModelProviders.of(activity!!, ViewModelFactory)[WeatherViewModel::class.java]
 
-        weatherViewModel.currentStatus.observe(this, Observer {
+        renderObserver = Observer {
             when (it) {
                 WeatherViewModel.Status.None -> {
 
@@ -47,15 +50,29 @@ class LoaderFragment : Fragment() {
                 }
                 is WeatherViewModel.Status.Success -> {
                     val navOptionsBuilder = NavOptions.Builder()
-                    navOptionsBuilder.setPopUpTo(R.id.mainFragment,true)
-                    findNavController().navigate(LoaderFragmentDirections.actionLoaderFragmentToWeatherFragment(),navOptionsBuilder.build())
+                    navOptionsBuilder.setPopUpTo(R.id.mainFragment, true)
+                    findNavController().navigate(
+                        LoaderFragmentDirections.actionLoaderFragmentToWeatherFragment(),
+                        navOptionsBuilder.build()
+                    )
                 }
                 is WeatherViewModel.Status.Error -> {
                     val navOptionsBuilder = NavOptions.Builder()
-                    navOptionsBuilder.setPopUpTo(R.id.mainFragment,true)
-                    findNavController().navigate(LoaderFragmentDirections.actionLoaderFragmentToErrorFragment(),navOptionsBuilder.build())
+                    navOptionsBuilder.setPopUpTo(R.id.mainFragment, true)
+                    findNavController().navigate(
+                        LoaderFragmentDirections.actionLoaderFragmentToErrorFragment(),
+                        navOptionsBuilder.build()
+                    )
                 }
             }
-        })
+        }
+
+        weatherViewModel.currentStatus.observe(this, renderObserver)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        /*Observer is removed here because of navigation - back issue. (i.e. Removing this line will not close the app when back button is pressed)*/
+        weatherViewModel.currentStatus.removeObserver(renderObserver)
     }
 }

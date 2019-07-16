@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.zestworks.weatherapplication.R
 import com.zestworks.weatherapplication.viewmodel.ViewModelFactory
@@ -16,6 +17,9 @@ import kotlinx.android.synthetic.main.fragment_error.*
 
 
 class ErrorFragment : Fragment() {
+
+    private lateinit var weatherViewModel: WeatherViewModel
+    private lateinit var renderObserver:Observer<WeatherViewModel.Status>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,12 +33,14 @@ class ErrorFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        val weatherViewModel = ViewModelProviders.of(activity!!, ViewModelFactory)[WeatherViewModel::class.java]
+        weatherViewModel = ViewModelProviders.of(activity!!, ViewModelFactory)[WeatherViewModel::class.java]
 
-        weatherViewModel.currentStatus.observe(this, Observer {
+        renderObserver = Observer {
             when(it){
                 WeatherViewModel.Status.None -> {
-                    findNavController().navigate(R.id.action_errorFragment_to_mainFragment)
+                    val navOptionsBuilder = NavOptions.Builder()
+                    navOptionsBuilder.setPopUpTo(R.id.mainFragment,true)
+                    findNavController().navigate(ErrorFragmentDirections.actionErrorFragmentToMainFragment(),navOptionsBuilder.build())
                 }
                 WeatherViewModel.Status.Loading -> {}
                 is WeatherViewModel.Status.Success -> {}
@@ -44,10 +50,18 @@ class ErrorFragment : Fragment() {
                     }
                 }
             }
-        })
+        }
+
+        weatherViewModel.currentStatus.observe(this, renderObserver)
 
         btn_retry.setOnClickListener {
             weatherViewModel.onRetryButtonClicked()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        /*Observer is removed here because of navigation - back issue. (i.e. Removing this line will not close the app when back button is pressed)*/
+        weatherViewModel.currentStatus.removeObserver(renderObserver)
     }
 }

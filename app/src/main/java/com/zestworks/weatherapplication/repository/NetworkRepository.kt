@@ -7,9 +7,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import retrofit2.http.QueryMap
 
-class WeatherRepository : Repository {
+class NetworkRepository : Repository {
 
     private val retrofit = Retrofit.Builder().baseUrl("https://api.apixu.com/v1/")
         .addConverterFactory(GsonConverterFactory.create())
